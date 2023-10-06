@@ -1,0 +1,49 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model ExchangeOffice {
+  id        String
+  name      String
+  country   String
+  exchanges Exchange[]
+  rates     Rate[]
+
+  @@unique([id])
+}
+
+model Exchange {
+  from             String
+  to               String
+  ask              Int
+  date             String
+  exchangeOffice   ExchangeOffice @relation(fields: [exchangeOfficeId], references: [id], onDelete: Cascade)
+  exchangeOfficeId String
+
+  @@unique([from, to, date, exchangeOfficeId])
+}
+
+model Rate {
+  from             String
+  to               String
+  in               Float
+  out              Float
+  reserve          Int
+  date             String
+  exchangeOffice   ExchangeOffice @relation(fields: [exchangeOfficeId], references: [id], onDelete: Cascade)
+  exchangeOfficeId String
+
+  @@unique([from, to, date, exchangeOfficeId])
+}
+
+model Country {
+  code String
+  name String
+
+  @@unique([code])
+}
